@@ -1,20 +1,53 @@
 <template>
-  <h1>{{ fullName }}</h1>
+  <p v-for="todo in doneTodos" :key="todo.text">
+    {{ todo.text }}
+  </p>
+
+  <button @click="checkAllTodos">Finalizar</button>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 
+interface Todo {
+  text: string
+  done: boolean
+}
+
 export default defineComponent({
   data() {
     return {
-      name: 'Gabriel',
-      lastName: 'Rocha'
+      todos: [] as Todo[]
     }
   },
   computed: {
-    fullName(): string {
-      return `${this.name} ${this.lastName}`
+    doneTodos(): Todo[] {
+      return this.todos.filter((todo) => todo.done)
+    }
+  },
+  watch: {
+    todos(newValues: Todo[]) {
+      const isFinished = !newValues.some(({ done }) => !done)
+      if (isFinished) {
+        alert('Parabéns, todos os pratos foram finalizados!')
+      }
+    }
+  },
+  created() {
+    this.todos = [
+      { text: 'Estudar Typescript', done: true },
+      { text: 'Lavar os pratos', done: false },
+      { text: 'Aprender Nuxt.js', done: true }
+    ]
+  },
+  methods: {
+    checkAllTodos() {
+      this.todos = this.todos.map(({ text }) => {
+        return {
+          text,
+          done: true
+        }
+      })
     }
   }
 })
